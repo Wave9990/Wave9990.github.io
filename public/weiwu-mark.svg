@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs><filter id="ink"><feTurbulence baseFrequency=".045" numOctaves="2" seed="8" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.2"/></filter><radialGradient id="paper"><stop stop-color="#EEE9D8"/><stop offset="1" stop-color="#C7BEA3"/></radialGradient></defs>
+  <circle cx="32" cy="32" r="31" fill="url(#paper)"/>
+  <path d="M49 17C40 8 22 9 14 22c-8 14 2 29 17 30 13 1 24-8 23-20" fill="none" stroke="#080808" stroke-width="2.7" stroke-linecap="round" filter="url(#ink)"/>
+  <text x="32" y="42" text-anchor="middle" font-family="STKaiti,KaiTi,Songti SC,serif" font-size="31" font-weight="700" fill="#080808" filter="url(#ink)">吾</text>
+</svg>

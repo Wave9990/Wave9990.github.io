@@ -1,0 +1,9 @@
+.brand-lanyard{position:fixed;z-index:100;left:-14px;top:-18px;width:230px;height:305px;pointer-events:none;filter:drop-shadow(0 24px 28px rgba(0,0,0,.42));animation:brand-lanyard-enter 1.1s cubic-bezier(.16,1,.3,1) both}
+@keyframes brand-lanyard-enter{from{opacity:0;transform:translateY(-28px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+.brand-lanyard canvas{position:relative;z-index:2;pointer-events:auto}
+.brand-lanyard-anchor{position:absolute;z-index:1;left:38px;top:30px;width:44px;height:44px;border-radius:50%;padding:4px;background:#080808;border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:auto}
+.brand-lanyard-anchor img{display:block;width:100%;height:100%}
+@media(max-width:768px){.brand-lanyard{left:-21px;top:-23px;width:182px;height:235px}}
+@media(max-width:430px){.brand-lanyard{width:166px;height:220px}}
+@media(max-width:768px){.brand-lanyard-anchor{left:31px;top:29px;width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){.brand-lanyard canvas{display:none}.brand-lanyard{width:88px;height:88px;left:0;top:0}.brand-lanyard-anchor{z-index:3;left:17px;top:17px;width:48px;height:48px}}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+desktop-preview.png
+mobile-preview.png
+.learnings/
+点石新媒体陪跑项目业务底图.md
+

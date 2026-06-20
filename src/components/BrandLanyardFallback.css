@@ -1,0 +1,16 @@
+.brand-lanyard-fallback{position:fixed;z-index:100;left:0;top:0;width:220px;height:300px;pointer-events:none;animation:brand-fallback-enter 1.15s cubic-bezier(.16,1,.3,1) both}
+.brand-fallback-rope{position:absolute;left:0;top:0;width:180px;height:150px;overflow:visible;filter:drop-shadow(0 8px 12px rgba(0,0,0,.35))}
+.brand-fallback-rope path{fill:none;stroke:#151411;stroke-width:5;stroke-linecap:round}.brand-fallback-rope path+path{stroke:#b8ad91;stroke-width:1;opacity:.48}
+.brand-fallback-card{position:absolute;left:68px;top:112px;display:flex;width:112px;height:158px;flex-direction:column;align-items:center;border:1px solid rgba(222,219,200,.32);border-radius:15px;background:linear-gradient(145deg,#eee9d8,#bdb397);padding:12px 9px;color:#090909;text-decoration:none;box-shadow:0 24px 55px rgba(0,0,0,.48);transform-origin:75% -24px;pointer-events:auto;animation:brand-fallback-sway 5.8s cubic-bezier(.45,.05,.55,.95) infinite alternate;will-change:transform}
+.brand-fallback-card::before{content:'';position:absolute;left:50%;top:-8px;width:20px;height:12px;transform:translateX(-50%);border:3px solid #827b69;border-bottom:0;border-radius:10px 10px 0 0}
+.brand-fallback-index{align-self:stretch;font-family:serif;font-size:6px;font-style:italic;letter-spacing:.12em;opacity:.4}
+.brand-fallback-ink{position:relative;display:grid;width:62px;height:62px;margin-top:8px;place-items:center;border:2px solid rgba(9,9,9,.72);border-radius:50%;transform:rotate(-7deg)}
+.brand-fallback-ink::after{content:'';position:absolute;inset:-5px;border:1px solid rgba(9,9,9,.12);border-radius:48% 52% 46% 54%}
+.brand-fallback-ink b{font-family:"STKaiti","KaiTi","Songti SC",serif;font-size:35px;line-height:1;transform:rotate(7deg)}
+.brand-fallback-card strong{margin-top:9px;font-family:"Songti SC",serif;font-size:13px;letter-spacing:.22em;text-indent:.22em}
+.brand-fallback-card small{margin-top:5px;text-align:center;font-size:6px;line-height:1.6;letter-spacing:.08em;opacity:.55}
+.brand-fallback-card i{width:34px;height:1px;margin-top:auto;background:#090909;opacity:.45}
+@keyframes brand-fallback-enter{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes brand-fallback-sway{0%{transform:rotate(-4deg) translate3d(-2px,0,0)}55%{transform:rotate(2.2deg) translate3d(2px,1px,0)}100%{transform:rotate(4.5deg) translate3d(3px,0,0)}}
+@media(max-width:768px){.brand-lanyard-fallback{width:176px;height:240px;transform:scale(.83);transform-origin:left top}.brand-fallback-card{left:59px;top:94px}.brand-fallback-rope{width:160px;height:130px}}
+@media(prefers-reduced-motion:reduce){.brand-fallback-card{animation:none;transform:rotate(1deg)}}

@@ -1,0 +1,22 @@
+.pill-nav-container{position:fixed;top:18px;left:50%;z-index:99;transform:translateX(-50%)}
+.pill-nav{--nav-h:46px;--pill-pad-x:18px;--pill-gap:4px;width:max-content;display:flex;align-items:center;gap:8px;box-sizing:border-box;filter:drop-shadow(0 12px 30px rgba(0,0,0,.25))}
+.pill-nav-items{position:relative;display:flex;align-items:center;height:var(--nav-h);background:var(--base,#050505);border:1px solid rgba(255,255,255,.1);border-radius:9999px;overflow:hidden}
+.pill-logo{width:var(--nav-h);height:var(--nav-h);flex:none;border-radius:50%;background:var(--base,#050505);border:1px solid rgba(255,255,255,.1);padding:5px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
+.pill-logo img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.pill-list{list-style:none;display:flex;align-items:stretch;gap:var(--pill-gap);margin:0;padding:4px;height:100%}
+.pill-list>li{display:flex;height:100%}
+.pill{display:inline-flex;align-items:center;justify-content:center;height:100%;padding:0 var(--pill-pad-x);background:var(--pill-bg,#dedbc8);color:var(--pill-text,#080808);text-decoration:none;border-radius:9999px;box-sizing:border-box;font-weight:600;font-size:11px;line-height:0;letter-spacing:.04em;white-space:nowrap;cursor:pointer;position:relative;overflow:hidden}
+.pill .hover-circle{position:absolute;left:50%;bottom:0;border-radius:50%;background:var(--base,#050505);z-index:1;display:block;pointer-events:none;will-change:transform}
+.pill .label-stack{position:relative;display:inline-block;line-height:1;z-index:2}
+.pill .pill-label{position:relative;z-index:2;display:inline-block;line-height:1;will-change:transform}
+.pill .pill-label-hover{position:absolute;left:0;top:0;color:var(--hover-text,#dedbc8);z-index:3;display:inline-block;line-height:1;will-change:transform,opacity}
+.pill.is-active::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--base,#050505);border-radius:50%;z-index:4}
+.desktop-only{display:block}.mobile-only{display:none}
+.mobile-menu-button{width:var(--nav-h);height:var(--nav-h);border-radius:50%;background:var(--base,#050505);border:1px solid rgba(255,255,255,.1);flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:0}
+.hamburger-line{width:16px;height:2px;background:var(--pill-bg,#dedbc8);border-radius:1px;transform-origin:center}
+.mobile-menu-popover{position:fixed;top:72px;left:16px;right:16px;background:var(--base,#050505);border:1px solid rgba(255,255,255,.1);border-radius:24px;box-shadow:0 18px 60px rgba(0,0,0,.35);z-index:98;visibility:hidden}
+.mobile-menu-list{list-style:none;margin:0;padding:5px;display:flex;flex-direction:column;gap:4px}
+.mobile-menu-link{display:block;padding:14px 17px;color:var(--pill-text,#080808);background:var(--pill-bg,#dedbc8);text-decoration:none;font-size:13px;font-weight:600;border-radius:50px}
+.mobile-menu-link.is-active{box-shadow:inset 0 0 0 2px rgba(0,0,0,.25)}
+@media(max-width:768px){.pill-nav-container{top:14px;left:0;width:100%;transform:none}.pill-nav{width:100%;justify-content:space-between;padding:0 16px;background:transparent}.pill-nav.no-logo{justify-content:flex-end}.desktop-only{display:none}.mobile-only{display:block}.mobile-menu-button{display:flex}}
+@media(max-width:1100px) and (min-width:769px){.pill-nav{--pill-pad-x:13px}.pill{font-size:10px}}

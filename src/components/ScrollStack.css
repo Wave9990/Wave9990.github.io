@@ -1,0 +1,19 @@
+.scroll-stack { position: relative; padding-bottom: 12vh; }
+.scroll-stack-card {
+  --stack-index: 0;
+  position: sticky;
+  top: calc(var(--stack-top, 12vh) + var(--stack-offset, 0px));
+  min-height: 420px;
+  margin-bottom: var(--stack-gap, 96px);
+  transform-origin: top center;
+  backface-visibility: hidden;
+  will-change: transform, filter, opacity;
+  box-shadow: 0 30px 90px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.055);
+}
+.scroll-stack-card:last-child { margin-bottom: 0; }
+@media (max-width: 767px) {
+  .scroll-stack-card { min-height: 510px; top: calc(82px + var(--stack-mobile-offset, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-stack-card { position: relative; top: auto; transform: none !important; filter: none !important; opacity: 1 !important; }
+}

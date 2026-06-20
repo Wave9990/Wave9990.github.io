@@ -1,0 +1,15 @@
+.opening-overlay{position:fixed;inset:0;z-index:300;overflow:hidden;background:#080808;color:#dedbc8}
+.opening-panels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr)}
+.opening-panel{background:#0b0b0a;border-right:1px solid rgba(222,219,200,.055);will-change:transform}
+.opening-center{position:absolute;left:50%;top:50%;display:grid;place-items:center;transform:translate(-50%,-50%)}
+.opening-mark{display:grid;width:108px;height:108px;place-items:center;border:1px solid rgba(222,219,200,.3);border-radius:50%;font-family:"STKaiti","KaiTi","Songti SC",serif;font-size:58px;font-weight:700;background:radial-gradient(circle at 38% 30%,#eee9d8,#bdb397);color:#090909;box-shadow:0 24px 90px rgba(0,0,0,.55),0 0 0 9px rgba(222,219,200,.025);will-change:transform,opacity}
+.opening-rule{width:170px;height:1px;margin-top:34px;background:linear-gradient(90deg,transparent,#dedbc8,transparent)}
+.opening-kicker{width:max-content;margin:18px 0 0;font-size:9px;letter-spacing:.34em;color:rgba(222,219,200,.5);will-change:transform,clip-path}
+.opening-index{position:absolute;right:28px;bottom:24px;font-family:serif;font-size:10px;font-style:italic;letter-spacing:.18em;color:rgba(222,219,200,.22)}
+[data-hero-line]{will-change:transform}
+[data-hero-line-wrap]{overflow:hidden;padding-bottom:.08em}
+[data-motion-card]{will-change:transform,clip-path}
+[data-section-reveal] h2{will-change:transform,clip-path}
+[data-parallax]{will-change:transform}
+@media(max-width:640px){.opening-panels{grid-template-columns:repeat(3,1fr)}.opening-panel:last-child{display:none}.opening-mark{width:86px;height:86px;font-size:46px}.opening-kicker{font-size:7px;letter-spacing:.22em}.opening-rule{width:140px}}
+@media(prefers-reduced-motion:reduce){.opening-overlay{display:none!important}[data-motion-card],[data-parallax],[data-hero-line]{transform:none!important;clip-path:none!important;opacity:1!important}}
