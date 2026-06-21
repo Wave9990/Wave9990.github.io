@@ -12,9 +12,11 @@ export default function MotionDirector() {
   useLayoutEffect(() => {
     const overlay = overlayRef.current
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const liteMotion = window.matchMedia('(max-width: 767px), (pointer: coarse), (hover: none)').matches
     const shouldPlayOpening = !window.location.hash || window.location.hash === '#top'
-    if (reduceMotion) {
+    if (reduceMotion || liteMotion) {
       if (overlay) overlay.style.display = 'none'
+      gsap.set('[data-hero-line],[data-hero-copy],[data-hero-eyebrow],[data-hero-stat],.pill-nav-container,.brand-lanyard,[data-motion-card],main section h2', { clearProps:'transform,opacity,visibility,clipPath,filter' })
       return
     }
     if (!shouldPlayOpening && overlay) overlay.style.display = 'none'

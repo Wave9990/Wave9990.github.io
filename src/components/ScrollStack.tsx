@@ -1,5 +1,4 @@
 import { Children, cloneElement, isValidElement, useEffect, useRef } from 'react'
-import Lenis from 'lenis'
 import './ScrollStack.css'
 
 type ItemProps = { children: React.ReactNode; itemClassName?: string; style?: React.CSSProperties }
@@ -35,8 +34,17 @@ export default function ScrollStack({
     const root = rootRef.current
     if (!root) return
     const cards = Array.from(root.querySelectorAll<HTMLElement>('.scroll-stack-card'))
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 767px), (pointer: coarse)').matches
     let raf = 0
+
+    if (reduceMotion) {
+      cards.forEach(card => {
+        card.style.transform = 'none'
+        card.style.filter = 'none'
+        card.style.opacity = '1'
+      })
+      return
+    }
 
     const update = () => {
       raf = 0
@@ -55,23 +63,29 @@ export default function ScrollStack({
       })
     }
     const requestUpdate = () => { if (!raf) raf = requestAnimationFrame(update) }
-    const lenis = reduceMotion ? null : new Lenis({ duration: 1.05, smoothWheel: true, syncTouch: false })
-    let lenisRaf = 0
-    const animate = (time: number) => {
-      lenis?.raf(time)
+    let listening = false
+    const start = () => {
+      if (listening) return
+      listening = true
+      window.addEventListener('resize', requestUpdate)
+      window.addEventListener('scroll', requestUpdate, { passive: true })
       requestUpdate()
-      lenisRaf = requestAnimationFrame(animate)
     }
-    if (lenis) lenisRaf = requestAnimationFrame(animate)
-    window.addEventListener('resize', requestUpdate)
-    window.addEventListener('scroll', requestUpdate, { passive: true })
-    update()
-    return () => {
+    const stop = () => {
+      if (!listening) return
+      listening = false
       window.removeEventListener('resize', requestUpdate)
       window.removeEventListener('scroll', requestUpdate)
+    }
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0]?.isIntersecting) start()
+      else stop()
+    }, { rootMargin: '35% 0px' })
+    observer.observe(root)
+    return () => {
+      observer.disconnect()
+      stop()
       cancelAnimationFrame(raf)
-      cancelAnimationFrame(lenisRaf)
-      lenis?.destroy()
     }
   }, [itemScale, itemStackDistance, blurAmount, rotationAmount])
 

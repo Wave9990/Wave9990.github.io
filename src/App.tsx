@@ -16,8 +16,39 @@ const BrandLanyard = lazy(() => import('./components/BrandLanyard'))
 
 const ease = [0.16, 1, 0.3, 1] as const
 
+type NavigatorWithHints = Navigator & {
+  deviceMemory?: number
+  connection?: { saveData?: boolean }
+}
+
+function prefersLiteExperience() {
+  const nav = navigator as NavigatorWithHints
+  return window.innerWidth < 1100
+    || window.matchMedia('(pointer: coarse), (hover: none), (prefers-reduced-motion: reduce)').matches
+    || Boolean(nav.connection?.saveData)
+    || (typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4)
+    || (typeof nav.hardwareConcurrency === 'number' && nav.hardwareConcurrency <= 4)
+}
+
 function Reveal({ children, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   return <div data-section-reveal className={className}>{children}</div>
+}
+
+function RestoreInitialHash() {
+  useEffect(() => {
+    const id = window.location.hash.slice(1)
+    if (!id || id === 'top') return
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.getElementById(id)
+      if (!target) return
+      const previousBehavior = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+      target.scrollIntoView({ block: 'start', behavior: 'auto' })
+      window.requestAnimationFrame(() => { document.documentElement.style.scrollBehavior = previousBehavior })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [])
+  return null
 }
 
 function Header() {
@@ -40,7 +71,7 @@ function Header() {
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
-        if (window.innerWidth < 768 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (prefersLiteExperience()) {
           setBrandMode('fallback')
           return
         }
@@ -60,18 +91,7 @@ function Header() {
 function Hero() {
   return <section id="top" className="min-h-screen p-3 md:p-5">
     <div className="relative flex min-h-[calc(100vh-24px)] overflow-hidden rounded-[26px] border border-white/10 bg-[#12110f] md:min-h-[calc(100vh-40px)] md:rounded-[38px]">
-      <video
-        data-hero-media
-        className="absolute -left-[2%] -top-[5%] h-[112%] w-[104%] object-cover opacity-55"
-        src="/media/hero-background.mp4"
-        poster="/media/hero-poster.jpg"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-      />
+      <HeroMedia />
       <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/20 to-black/80" />
       <div className="absolute inset-0 bg-grid opacity-55 mix-blend-overlay" />
       <div className="absolute -right-24 top-[-15%] h-[620px] w-[620px] rounded-full bg-[#836f4c]/20 blur-[120px]" />
@@ -105,6 +125,38 @@ function Hero() {
       </div>
     </div>
   </section>
+}
+
+function HeroMedia() {
+  const [source, setSource] = useState<string | null>(null)
+  useEffect(() => {
+    const nav = navigator as NavigatorWithHints
+    if ((window.location.hash && window.location.hash !== '#top') || nav.connection?.saveData || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const mobile = window.matchMedia('(max-width: 767px), (pointer: coarse)').matches
+    let timer = 0
+    const loadVideo = () => {
+      timer = window.setTimeout(() => setSource(mobile ? '/media/hero-background-mobile.mp4' : '/media/hero-background-desktop.mp4'), mobile ? 900 : 350)
+    }
+    if (document.readyState === 'complete') loadVideo()
+    else window.addEventListener('load', loadVideo, { once: true })
+    return () => {
+      window.removeEventListener('load', loadVideo)
+      window.clearTimeout(timer)
+    }
+  }, [])
+  return <video
+    data-hero-media
+    className="absolute -left-[2%] -top-[5%] h-[112%] w-[104%] object-cover opacity-55"
+    src={source || undefined}
+    poster="/media/hero-poster.jpg"
+    autoPlay={Boolean(source)}
+    loop
+    muted
+    playsInline
+    preload="none"
+    disablePictureInPicture
+    aria-hidden="true"
+  />
 }
 
 const workFlow = [
@@ -151,9 +203,9 @@ function Problems() {
 
 function About() {
   const audiences = [
-    { image:'/generated/service-people-triptych-v1.png', imagePosition:'left' as const, eyebrow:'Business owner', title:'装修公司老板', handle:'经营者', subtitle:'想把老板个人专业，变成企业稳定获客入口。', borderColor:'#c8a878', gradient:'linear-gradient(145deg,#342c22,#090909)' },
-    { image:'/generated/service-people-triptych-v1.png', imagePosition:'center' as const, eyebrow:'Independent designer', title:'设计师老板', handle:'主理人', subtitle:'有作品、有审美，需要让本地客户看见并信任。', borderColor:'#dedbc8', gradient:'linear-gradient(145deg,#35342e,#090909)' },
-    { image:'/generated/service-people-triptych-v1.png', imagePosition:'right' as const, eyebrow:'Sales leader', title:'销售团队负责人', handle:'增长者', subtitle:'需要统一内容、线索承接与团队成交动作。', borderColor:'#a79878', gradient:'linear-gradient(145deg,#2b2924,#090909)' },
+    { image:'/generated/service-people-triptych-v1-optimized.jpg', imagePosition:'left' as const, eyebrow:'Business owner', title:'装修公司老板', handle:'经营者', subtitle:'想把老板个人专业，变成企业稳定获客入口。', borderColor:'#c8a878', gradient:'linear-gradient(145deg,#342c22,#090909)' },
+    { image:'/generated/service-people-triptych-v1-optimized.jpg', imagePosition:'center' as const, eyebrow:'Independent designer', title:'设计师老板', handle:'主理人', subtitle:'有作品、有审美，需要让本地客户看见并信任。', borderColor:'#dedbc8', gradient:'linear-gradient(145deg,#35342e,#090909)' },
+    { image:'/generated/service-people-triptych-v1-optimized.jpg', imagePosition:'right' as const, eyebrow:'Sales leader', title:'销售团队负责人', handle:'增长者', subtitle:'需要统一内容、线索承接与团队成交动作。', borderColor:'#a79878', gradient:'linear-gradient(145deg,#2b2924,#090909)' },
   ]
   return <section id="about" className="px-4 pb-24 md:px-8 md:pb-36">
     <div className="mx-auto max-w-[1480px]">
@@ -192,12 +244,12 @@ function Method() {
 }
 
 const cases = [
-  {name:'长沙点石装修老蒋小蒋',handle:'装修顾问夫妻 IP',image:'/cases/01-laojiang-xiaojiang.jpg',stats:['792 粉丝','811 作品','1.2万获赞'],result:'700万',resultLabel:'年度新媒体渠道产值',action:'高频更新 + 持续账号迭代',effect:'围绕本地业主真正关心的问题持续输出，根据咨询反馈不断校准选题、表达和转化链路，让账号从偶尔来一个客户，变成持续有客户咨询。',conclusion:'持续更新不是为了刷存在感，而是让账号长期接住同楼盘的真实装修需求。'},
-  {name:'湖南设计师易不凡',handle:'大宅全案设计师 IP',image:'/cases/02-yibufan.jpg',stats:['3074 粉丝','207 作品','1.3万获赞'],result:'20组/月',resultLabel:'140㎡以上精装房有效客资',action:'建立设计师老板人设 + 精准定位高净值客户',effect:'月发布约 15 条内容，围绕大宅客户关心的空间规划、材料选择和生活方式表达，每月稳定获得 20 组高意向咨询，不追求泛流量。',conclusion:'粉丝不到 3000 也能持续拿到大客户。设计师 IP 的核心不是拍得好看，而是让目标客户觉得你懂他。'},
-  {name:'平江装修罗怀安',handle:'本地装修老板 IP',image:'/cases/03-luohuaian.jpg',stats:['1563 粉丝','258 作品','1.6万获赞'],result:'500万+',resultLabel:'年度产值 · 春节单月获客 30 组',action:'稳定内容产出 + 装修季集中承接',effect:'持续陪跑和优质内容更新，让账号在关键装修季稳定获得高意向咨询。春节单月集中获得 30 组高意向客户，用稳定更新替代偶发爆款。',conclusion:'稳定输出能把装修季的集中需求，变成可追踪的高意向咨询。'},
-  {name:'长沙装修罗委乡',handle:'装修行业服务 IP',image:'/cases/04-luoweixiang.jpg',stats:['991 粉丝','627 作品','7454 获赞'],result:'8单/月',resultLabel:'年度产值 500万+ · 单月最高签单',action:'短视频持续曝光 + 直播即时承接',effect:'短视频负责保持楼盘曝光，直播负责回答客户问题和即时沟通，让信任与转化同步发生，年度新媒体产值达到 500 万+。',conclusion:'短视频和直播不是两件事，而是一套从持续出现到即时转化的组合拳。'},
-  {name:'长沙点石家装 周维',handle:'十年装修人 IP',image:'/cases/05-zhouwei.jpg',stats:['1963 粉丝','623 作品','1.6万获赞'],result:'30+',resultLabel:'两周同楼盘精准客户',action:'重点交房楼盘点对点打穿',effect:'围绕同一交房楼盘连续输出约 20 条优质内容，反复覆盖同一批有真实需求的本地业主，快速形成区域认知和集中咨询。',conclusion:'把一个重点楼盘持续讲透，比追求泛流量更容易收获精准客户。'},
-  {name:'张家界装修界的伍显微',handle:'本地家装顾问 IP',image:'/cases/06-wuxianwei.jpg',stats:['4243 粉丝','539 作品','3.5万获赞'],result:'2–3单/月',resultLabel:'稳定签单 · 年业绩 500万+',action:'建立长期可复制的内容节奏',effect:'用固定的内容结构、更新节奏和案例反馈，降低账号对偶发爆款的依赖，让咨询、跟进和签单逐渐形成稳定预期，年业绩达到 500 万+。',conclusion:'真正有价值的不是一次爆发，而是每个月都能稳定产生咨询和成交。'},
+  {name:'长沙点石装修老蒋小蒋',handle:'装修顾问夫妻 IP',image:'/cases/01-laojiang-xiaojiang-optimized.jpg',stats:['792 粉丝','811 作品','1.2万获赞'],result:'700万',resultLabel:'年度新媒体渠道产值',action:'高频更新 + 持续账号迭代',effect:'围绕本地业主真正关心的问题持续输出，根据咨询反馈不断校准选题、表达和转化链路，让账号从偶尔来一个客户，变成持续有客户咨询。',conclusion:'持续更新不是为了刷存在感，而是让账号长期接住同楼盘的真实装修需求。'},
+  {name:'湖南设计师易不凡',handle:'大宅全案设计师 IP',image:'/cases/02-yibufan-optimized.jpg',stats:['3074 粉丝','207 作品','1.3万获赞'],result:'20组/月',resultLabel:'140㎡以上精装房有效客资',action:'建立设计师老板人设 + 精准定位高净值客户',effect:'月发布约 15 条内容，围绕大宅客户关心的空间规划、材料选择和生活方式表达，每月稳定获得 20 组高意向咨询，不追求泛流量。',conclusion:'粉丝不到 3000 也能持续拿到大客户。设计师 IP 的核心不是拍得好看，而是让目标客户觉得你懂他。'},
+  {name:'平江装修罗怀安',handle:'本地装修老板 IP',image:'/cases/03-luohuaian-optimized.jpg',stats:['1563 粉丝','258 作品','1.6万获赞'],result:'500万+',resultLabel:'年度产值 · 春节单月获客 30 组',action:'稳定内容产出 + 装修季集中承接',effect:'持续陪跑和优质内容更新，让账号在关键装修季稳定获得高意向咨询。春节单月集中获得 30 组高意向客户，用稳定更新替代偶发爆款。',conclusion:'稳定输出能把装修季的集中需求，变成可追踪的高意向咨询。'},
+  {name:'长沙装修罗委乡',handle:'装修行业服务 IP',image:'/cases/04-luoweixiang-optimized.jpg',stats:['991 粉丝','627 作品','7454 获赞'],result:'8单/月',resultLabel:'年度产值 500万+ · 单月最高签单',action:'短视频持续曝光 + 直播即时承接',effect:'短视频负责保持楼盘曝光，直播负责回答客户问题和即时沟通，让信任与转化同步发生，年度新媒体产值达到 500 万+。',conclusion:'短视频和直播不是两件事，而是一套从持续出现到即时转化的组合拳。'},
+  {name:'长沙点石家装 周维',handle:'十年装修人 IP',image:'/cases/05-zhouwei-optimized.jpg',stats:['1963 粉丝','623 作品','1.6万获赞'],result:'30+',resultLabel:'两周同楼盘精准客户',action:'重点交房楼盘点对点打穿',effect:'围绕同一交房楼盘连续输出约 20 条优质内容，反复覆盖同一批有真实需求的本地业主，快速形成区域认知和集中咨询。',conclusion:'把一个重点楼盘持续讲透，比追求泛流量更容易收获精准客户。'},
+  {name:'张家界装修界的伍显微',handle:'本地家装顾问 IP',image:'/cases/06-wuxianwei-optimized.jpg',stats:['4243 粉丝','539 作品','3.5万获赞'],result:'2–3单/月',resultLabel:'稳定签单 · 年业绩 500万+',action:'建立长期可复制的内容节奏',effect:'用固定的内容结构、更新节奏和案例反馈，降低账号对偶发爆款的依赖，让咨询、跟进和签单逐渐形成稳定预期，年业绩达到 500 万+。',conclusion:'真正有价值的不是一次爆发，而是每个月都能稳定产生咨询和成交。'},
 ]
 
 function Cases() {
@@ -232,14 +284,14 @@ function Cases() {
 }
 
 const feedbacks = [
-  {account:'伍显微',tag:'连续签单',title:'抖音客户连续成交',image:'/feedback/01-wuxianwei-multi-signing.jpg'},
-  {account:'伍显微',tag:'首日签单',title:'上班第一天签下抖音客户',image:'/feedback/02-wuxianwei-first-day.jpg'},
-  {account:'伍显微',tag:'持续获客',title:'抖音客户连续到店',image:'/feedback/03-wuxianwei-leads.jpg'},
-  {account:'伍显微',tag:'成交反馈',title:'内容形成循环 客户成交率高',image:'/feedback/04-wuxianwei-conversion.jpg'},
-  {account:'老蒋小蒋',tag:'客资与签单',title:'客资 +3 签单 +1',image:'/feedback/05-laojiang-results.jpg'},
-  {account:'罗委乡',tag:'单日客资',title:'一天接待四波客户',image:'/feedback/06-luoweixiang-four-waves.jpg'},
-  {account:'罗委乡',tag:'月度签单',title:'月初已签 6 单',image:'/feedback/07-luoweixiang-six-orders.jpg'},
-  {account:'罗委乡',tag:'一访成交',title:'客户首次到访即签单',image:'/feedback/08-luoweixiang-first-visit.jpg'},
+  {account:'伍显微',tag:'连续签单',title:'抖音客户连续成交',image:'/feedback/01-wuxianwei-multi-signing-optimized.jpg'},
+  {account:'伍显微',tag:'首日签单',title:'上班第一天签下抖音客户',image:'/feedback/02-wuxianwei-first-day-optimized.jpg'},
+  {account:'伍显微',tag:'持续获客',title:'抖音客户连续到店',image:'/feedback/03-wuxianwei-leads-optimized.jpg'},
+  {account:'伍显微',tag:'成交反馈',title:'内容形成循环 客户成交率高',image:'/feedback/04-wuxianwei-conversion-optimized.jpg'},
+  {account:'老蒋小蒋',tag:'客资与签单',title:'客资 +3 签单 +1',image:'/feedback/05-laojiang-results-optimized.jpg'},
+  {account:'罗委乡',tag:'单日客资',title:'一天接待四波客户',image:'/feedback/06-luoweixiang-four-waves-optimized.jpg'},
+  {account:'罗委乡',tag:'月度签单',title:'月初已签 6 单',image:'/feedback/07-luoweixiang-six-orders-optimized.jpg'},
+  {account:'罗委乡',tag:'一访成交',title:'客户首次到访即签单',image:'/feedback/08-luoweixiang-first-visit-optimized.jpg'},
 ]
 
 function Feedback() {
@@ -261,7 +313,7 @@ function Feedback() {
           <CardSwap width={520} height={610} cardDistance={38} verticalDistance={46} delay={4200} pauseOnHover onCardClick={index=>setSelectedFeedback(feedbacks[index])}>
             {feedbacks.map(item=><Card key={item.image} customClass="feedback-swap-card" role="button" aria-label={`查看${item.account}${item.title}反馈截图`}>
               <div className="feedback-card-header"><span className="feedback-card-account">{item.account}</span><span className="feedback-card-tag">{item.tag}</span></div>
-              <div className="feedback-card-image"><img src={item.image} alt={`${item.account}${item.title}聊天反馈`} loading="lazy"/></div>
+              <div className="feedback-card-image"><img src={item.image} alt={`${item.account}${item.title}聊天反馈`} loading="lazy" decoding="async"/></div>
               <div className="feedback-card-footer"><h3>{item.title}</h3><span>点击放大</span></div>
             </Card>)}
           </CardSwap>
@@ -384,7 +436,7 @@ function Contact() {
           <div data-motion-group className="grid gap-3 sm:grid-cols-3 lg:col-span-8">
             {channels.map(channel => <a data-motion-card key={channel.name} href={channel.image} target="_blank" rel="noreferrer" className="group flex min-w-0 flex-col rounded-[22px] bg-[#11110f] p-3 text-primary shadow-[0_20px_60px_rgba(0,0,0,.12)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(0,0,0,.2)]">
               <div className="relative aspect-[3/4] overflow-hidden rounded-[15px] bg-white">
-                <img src={channel.image} alt={`${channel.name}二维码`} className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.02]"/>
+                <img src={channel.image} alt={`${channel.name}二维码`} loading="lazy" decoding="async" className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.02]"/>
                 <span className="absolute right-3 top-3 rounded-full bg-black/70 px-2.5 py-1 text-[9px] tracking-[.12em] text-white backdrop-blur-md">点击放大</span>
               </div>
               <div className="flex items-start justify-between gap-3 px-2 pb-2 pt-5">
@@ -401,5 +453,5 @@ function Contact() {
 }
 
 export default function App() {
-  return <main className="overflow-hidden bg-ink text-[#e1e0cc]"><MotionDirector/><Header/><Hero/><Problems/><About/><Method/><Cases/><Feedback/><Difference/><Services/><Contact/></main>
+  return <main className="overflow-hidden bg-ink text-[#e1e0cc]"><RestoreInitialHash/><MotionDirector/><Header/><Hero/><Problems/><About/><Method/><Cases/><Feedback/><Difference/><Services/><Contact/></main>
 }

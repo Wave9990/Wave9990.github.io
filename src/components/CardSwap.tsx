@@ -42,6 +42,7 @@ export default function CardSwap({
   easing = 'elastic',
   children,
 }: CardSwapProps) {
+  const staticMode = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px), (pointer: coarse), (prefers-reduced-motion: reduce)').matches
   const config = easing === 'elastic'
     ? { ease:'elastic.out(.6,.9)', drop:1.45, move:1.35, back:1.45, overlap:.86, returnDelay:.06 }
     : { ease:'power1.inOut', drop:.7, move:.7, back:.7, overlap:.45, returnDelay:.18 }
@@ -53,6 +54,7 @@ export default function CardSwap({
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
+    if (staticMode) return
     const total = refs.length
     refs.forEach((ref,index) => {
       const slot = makeSlot(index,cardDistance,verticalDistance,total)
@@ -90,7 +92,7 @@ export default function CardSwap({
       timelineRef.current?.kill()
       if(container){container.removeEventListener('mouseenter',pause);container.removeEventListener('mouseleave',resume)}
     }
-  },[cardDistance,verticalDistance,delay,pauseOnHover,skewAmount,easing,refs,config.back,config.drop,config.ease,config.move,config.overlap,config.returnDelay])
+  },[cardDistance,verticalDistance,delay,pauseOnHover,skewAmount,easing,refs,config.back,config.drop,config.ease,config.move,config.overlap,config.returnDelay,staticMode])
 
   const rendered = childArray.map((child,index) => cloneElement(child,{
     key:index,
@@ -99,5 +101,5 @@ export default function CardSwap({
     onClick:(event:React.MouseEvent<HTMLDivElement>) => {child.props.onClick?.(event);onCardClick?.(index)},
   }))
 
-  return <div ref={containerRef} className="card-swap-container" style={{width,height}}>{rendered}</div>
+  return <div ref={containerRef} className={`card-swap-container${staticMode ? ' card-swap-static' : ''}`} style={{width,height}}>{rendered}</div>
 }

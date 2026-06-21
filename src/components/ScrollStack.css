@@ -12,7 +12,8 @@
 }
 .scroll-stack-card:last-child { margin-bottom: 0; }
 @media (max-width: 767px) {
-  .scroll-stack-card { min-height: 510px; top: calc(82px + var(--stack-mobile-offset, 0px)); }
+  .scroll-stack { padding-bottom: 0; }
+  .scroll-stack-card { position: relative; min-height: 510px; top: auto; margin-bottom: 18px; transform: none !important; filter: none !important; opacity: 1 !important; will-change: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-stack-card { position: relative; top: auto; transform: none !important; filter: none !important; opacity: 1 !important; }

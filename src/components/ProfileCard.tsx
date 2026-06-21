@@ -52,7 +52,7 @@ function ProfileCardComponent({ imageUrl, name, handle, stats, index, enableTilt
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!enableTilt || !shellRef.current) return
+    if (!enableTilt || !shellRef.current || window.matchMedia('(pointer: coarse), (hover: none)').matches) return
     const rect = shellRef.current.getBoundingClientRect()
     setTarget(clamp(((event.clientX - rect.left) / rect.width) * 100), clamp(((event.clientY - rect.top) / rect.height) * 100))
   }
@@ -69,7 +69,7 @@ function ProfileCardComponent({ imageUrl, name, handle, stats, index, enableTilt
     <div className="profile-card-behind"/>
     <div ref={shellRef} className="profile-card-shell" onPointerMove={onPointerMove} onPointerEnter={onPointerEnter} onPointerLeave={onPointerLeave}>
       <button className="profile-card" type="button" onClick={onClick} aria-label={`查看${name}案例详情`}>
-        <div className="profile-card-media" data-parallax><img src={imageUrl} alt={`${name}账号主页`} loading="lazy"/></div>
+        <div className="profile-card-media"><img src={imageUrl} alt={`${name}账号主页`} loading={index <= 2 ? 'eager' : 'lazy'} fetchPriority={index <= 2 ? 'high' : 'low'} decoding="async" width="720" height="1561"/></div>
         <div className="profile-card-shine"/>
         <div className="profile-card-glare"/>
         <div className="profile-card-gradient"/>

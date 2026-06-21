@@ -18,3 +18,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .soft-glow { box-shadow: 0 0 100px rgba(198, 171, 119, .12); }
 .text-balance { text-wrap: balance; }
+
+@media (max-width: 767px), (pointer: coarse) {
+  html { scroll-behavior: auto; }
+  .noise-overlay { display: none; }
+}

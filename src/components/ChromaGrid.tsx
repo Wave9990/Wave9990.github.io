@@ -30,6 +30,7 @@ export default function ChromaGrid({ items, className = '', radius = 280, dampin
   }, [])
 
   const move = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (window.matchMedia('(pointer: coarse), (hover: none)').matches) return
     const el = rootRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -42,6 +43,7 @@ export default function ChromaGrid({ items, className = '', radius = 280, dampin
 
   return <div ref={rootRef} className={`chroma-grid ${className}`.trim()} style={{ '--r': `${radius}px` } as React.CSSProperties} onPointerMove={move} onPointerLeave={() => gsap.to(fadeRef.current, { opacity: 1, duration: fadeOut, overwrite: true })}>
     {items.map((item, index) => <article key={item.title} className="chroma-card" style={{ '--card-border': item.borderColor || '#dedbc8', '--card-gradient': item.gradient || 'linear-gradient(145deg,#26251f,#080808)' } as React.CSSProperties} onPointerMove={event => {
+      if (window.matchMedia('(pointer: coarse), (hover: none)').matches) return
       const rect = event.currentTarget.getBoundingClientRect()
       event.currentTarget.style.setProperty('--mouse-x', `${event.clientX - rect.left}px`)
       event.currentTarget.style.setProperty('--mouse-y', `${event.clientY - rect.top}px`)

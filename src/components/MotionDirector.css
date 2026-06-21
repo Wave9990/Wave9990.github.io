@@ -11,5 +11,6 @@
 [data-motion-card]{will-change:transform,clip-path}
 [data-section-reveal] h2{will-change:transform,clip-path}
 [data-parallax]{will-change:transform}
+@media(max-width:767px),(pointer:coarse){[data-parallax]{will-change:auto;transform:none!important}.opening-overlay{display:none!important}}
 @media(max-width:640px){.opening-panels{grid-template-columns:repeat(3,1fr)}.opening-panel:last-child{display:none}.opening-mark{width:86px;height:86px;font-size:46px}.opening-kicker{font-size:7px;letter-spacing:.22em}.opening-rule{width:140px}}
 @media(prefers-reduced-motion:reduce){.opening-overlay{display:none!important}[data-motion-card],[data-parallax],[data-hero-line]{transform:none!important;clip-path:none!important;opacity:1!important}}
