@@ -1,0 +1,23 @@
+:root {
+  --paper: #f8f5ef;
+  --surface: #fffdfa;
+  --ink: #2a2522;
+  --muted-ink: #776e66;
+  --line: #e7dfd5;
+  --terracotta: #b86e58;
+  --gold: #b78a45;
+  --track-b2b: #b86e58;
+  --track-c2c: #6b917f;
+  --radius-card: 18px;
+  --shadow-card: 0 8px 24px rgb(53 40 28 / 7%);
+  --motion-fast: 160ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
