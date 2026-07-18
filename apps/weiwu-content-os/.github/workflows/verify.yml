@@ -1,0 +1,28 @@
+name: Verify Content OS
+
+on:
+  pull_request:
+    paths:
+      - 'apps/weiwu-content-os/**'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/weiwu-content-os/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/weiwu-content-os
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.x
+          cache: npm
+          cache-dependency-path: apps/weiwu-content-os/package-lock.json
+      - run: npm ci
+      - run: npm run test -- --run
+      - run: npm run typecheck
+      - run: npm run build
