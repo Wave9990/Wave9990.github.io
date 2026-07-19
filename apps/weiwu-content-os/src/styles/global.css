@@ -600,6 +600,9 @@ button:disabled {
 .topic-card-details dt { color: var(--muted-ink); font-size: 11px; }
 .topic-card-details dd { min-width: 0; margin: 0; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 
+.topic-card-actions { margin-top: 18px; }
+.topic-card-actions .ui-button { width: 100%; text-decoration: none; }
+
 .topic-card footer {
   display: flex;
   align-items: center;
@@ -674,6 +677,26 @@ button:disabled {
 .confirm-dialog > p:not(.eyebrow) { color: var(--muted-ink); line-height: 1.7; }
 
 .script-list { display: grid; gap: 12px; }
+.script-start-panel {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid rgb(184 110 88 / 28%);
+  border-radius: var(--radius-card);
+  background: linear-gradient(135deg, rgb(255 253 250 / 96%), rgb(249 240 232 / 82%));
+  box-shadow: 0 8px 22px rgb(42 37 34 / 4%);
+}
+.script-start-panel-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.script-start-panel-heading h2 { margin: 4px 0 0; font-family: Georgia, 'Songti SC', STSong, serif; font-size: 24px; font-weight: 600; }
+.script-start-panel-heading p:not(.eyebrow) { margin: 7px 0 0; color: var(--muted-ink); font-size: 13px; }
+.script-start-panel-heading > span { flex: none; padding: 6px 10px; border-radius: 99px; background: rgb(184 110 88 / 12%); color: var(--terracotta); font-size: 12px; font-weight: 700; }
+.script-start-list { display: grid; gap: 8px; }
+.script-start-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgb(255 255 255 / 64%); }
+.script-start-row > div { display: grid; min-width: 0; gap: 4px; }
+.script-start-row strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.script-start-row span { overflow: hidden; color: var(--muted-ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.script-start-row .ui-button { flex: none; text-decoration: none; }
 .script-row {
   display: grid;
   grid-template-columns: minmax(180px, 1.2fr) minmax(180px, .85fr) minmax(210px, 1fr) minmax(130px, .5fr) minmax(170px, .75fr);
@@ -1285,6 +1308,11 @@ button:disabled {
   .content-filters .search-field,
   .script-row-hook { grid-column: auto; }
   .topic-card { min-height: 276px; }
+
+  .script-start-panel-heading,
+  .script-start-row { align-items: stretch; flex-direction: column; }
+  .script-start-panel-heading > span { width: max-content; }
+  .script-start-row .ui-button { width: 100%; }
   .editor-card { padding: 22px 18px; }
   .editor-actions { align-items: stretch; flex-direction: column-reverse; }
   .editor-actions > div { justify-content: flex-end; }

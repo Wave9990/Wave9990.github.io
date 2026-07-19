@@ -40,6 +40,12 @@ export function TopicEditor() {
   const [showDelete, setShowDelete] = useState(false)
   const pageTitle = isNew ? '新建选题' : '编辑选题'
   const isOwner = membership?.role === 'owner'
+  const scriptCreationSearch = useMemo(() => {
+    if (!contentId) return ''
+    const params = new URLSearchParams(location.search)
+    params.set('content', contentId)
+    return `?${params.toString()}`
+  }, [contentId, location.search])
 
   useEffect(() => {
     if (isNew || !workspace || !contentId) return
@@ -115,7 +121,7 @@ export function TopicEditor() {
           <label className="field"><span>内容目标</span><input value={form.objective} onChange={(event) => change('objective', event.target.value)} placeholder="如：建立专业信任、获取咨询" /></label>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        {isOwner && <footer className="editor-actions"><div>{!isNew && <Button type="button" variant="ghost" disabled={isSaving} onClick={() => setShowDelete(true)}>归档这条选题</Button>}</div><div><Button type="button" variant="ghost" disabled={isSaving} onClick={() => navigate({ pathname: '/topics', search: location.search })}>取消</Button><Button type="submit" disabled={isSaving}>{isSaving ? '保存中…' : '保存选题'}</Button></div></footer>}
+        {isOwner && <footer className="editor-actions"><div>{!isNew && <Button type="button" variant="ghost" disabled={isSaving} onClick={() => setShowDelete(true)}>归档这条选题</Button>}</div><div>{!isNew && <Link className="ui-button ui-button--secondary" to={{ pathname: '/scripts/new', search: scriptCreationSearch }}>开始写脚本</Link>}<Button type="button" variant="ghost" disabled={isSaving} onClick={() => navigate({ pathname: '/topics', search: location.search })}>取消</Button><Button type="submit" disabled={isSaving}>{isSaving ? '保存中…' : '保存选题'}</Button></div></footer>}
         </fieldset>
       </form>
       {showDelete && isOwner && <ConfirmDialog title="归档这条选题？" description="选题会从日常库中隐藏，但仍可在后续恢复；不会被永久删除。" confirmLabel="确认归档" isBusy={isDeleting} onCancel={() => setShowDelete(false)} onConfirm={handleDelete} />}

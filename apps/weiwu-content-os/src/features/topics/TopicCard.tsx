@@ -29,7 +29,15 @@ export function formatTopicStatus(status: ContentItemWithTrack['topic_status']) 
   return topicStatusLabel[status]
 }
 
-export function TopicCard({ item, search = '' }: { item: ContentItemWithTrack; search?: string }) {
+function scriptCreationSearch(contentId: string, search: string) {
+  const params = new URLSearchParams(search)
+  params.set('content', contentId)
+  return `?${params.toString()}`
+}
+
+export function TopicCard({ item, search = '', canCreateScript = false }: { item: ContentItemWithTrack; search?: string; canCreateScript?: boolean }) {
+  const canStartScript = canCreateScript && item.production_stage === 'no_script'
+
   return (
     <article className="topic-card">
       <div className="topic-card-meta">
@@ -45,6 +53,9 @@ export function TopicCard({ item, search = '' }: { item: ContentItemWithTrack; s
         <div><dt>关键词</dt><dd>{item.keyword || '未填写'}</dd></div>
         <div><dt>目标</dt><dd>{item.objective || '未填写'}</dd></div>
       </dl>
+      {canStartScript && <div className="topic-card-actions">
+        <Link className="ui-button ui-button--secondary" to={{ pathname: '/scripts/new', search: scriptCreationSearch(item.id, search) }}>开始写脚本</Link>
+      </div>}
       <footer>
         <span><CalendarDays size={14} /> {new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric' }).format(new Date(item.updated_at))} 更新</span>
         <span className="topic-card-stage">{formatTopicStatus(item.topic_status)} · {stageLabel[item.production_stage]}</span>
