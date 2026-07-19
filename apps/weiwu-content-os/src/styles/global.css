@@ -127,6 +127,22 @@ button:disabled {
   line-height: 1.6;
 }
 
+.auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-top: 16px;
+}
+
+.auth-actions button {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--terracotta);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .app-shell {
   min-height: 100vh;
   padding: clamp(18px, 4vw, 48px);
@@ -1162,6 +1178,16 @@ button:disabled {
 .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .settings-actions .ui-button { gap: 6px; }
 
+.member-invite-form { display: flex; gap: 8px; margin-top: 20px; }
+.member-invite-form label { flex: 1; min-width: 0; }
+.member-invite-form input { width: 100%; min-height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); outline-color: var(--terracotta); }
+.member-invite-list { display: grid; gap: 8px; margin-top: 16px; }
+.member-invite-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: rgb(255 253 250 / 58%); }
+.member-invite-row > div { display: grid; min-width: 0; gap: 4px; }
+.member-invite-row strong { overflow: hidden; font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.member-invite-row span { color: var(--muted-ink); font-size: 12px; line-height: 1.5; }
+.member-invite-row .ui-button { flex: none; }
+
 .backup-validate {
   display: flex;
   align-items: center;
@@ -1289,6 +1315,11 @@ button:disabled {
   .dashboard-heading { align-items: flex-start; flex-direction: column; }
   .settings-heading { align-items: flex-start; flex-direction: column; }
   .settings-facts { grid-template-columns: 1fr; }
+
+  .member-invite-form,
+  .member-invite-row { align-items: stretch; flex-direction: column; }
+  .member-invite-form .ui-button,
+  .member-invite-row .ui-button { width: 100%; }
   .dashboard-heading-actions { justify-content: flex-start; }
   .shoot-task-list { grid-template-columns: 1fr; }
   .asset-link-form { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; }

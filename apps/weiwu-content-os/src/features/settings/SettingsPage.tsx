@@ -1,5 +1,5 @@
-import { Download, FileCheck2, RotateCcw, ShieldCheck } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Download, FileCheck2, MailPlus, RotateCcw, ShieldCheck, UserRoundX } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { Button } from '../../components/ui/Button'
 import { restoreContentItem } from '../../repositories/contentRepository'
 import {
@@ -13,6 +13,7 @@ import {
   type WorkspaceBackup
 } from '../../repositories/exportRepository'
 import { useAuth } from '../../providers/AuthProvider'
+import { inviteReadonlyMember, listWorkspaceInvitations, revokeReadonlyMember, type WorkspaceInvitation } from '../../repositories/memberRepository'
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
@@ -33,12 +34,16 @@ function BackupPreview({ backup }: { backup: WorkspaceBackup }) {
 export function SettingsPage() {
   const { workspace, user, membership } = useAuth()
   const [archives, setArchives] = useState<ArchivedContentItem[]>([])
+  const [invitations, setInvitations] = useState<WorkspaceInvitation[]>([])
   const [isLoadingArchives, setIsLoadingArchives] = useState(true)
   const [isExporting, setIsExporting] = useState<'json' | 'csv' | null>(null)
   const [restoringId, setRestoringId] = useState<string | null>(null)
   const [backupPreview, setBackupPreview] = useState<WorkspaceBackup | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [isInviting, setIsInviting] = useState(false)
+  const [revokingInvitationId, setRevokingInvitationId] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const isOwner = membership?.role === 'owner'
@@ -63,6 +68,56 @@ export function SettingsPage() {
   useEffect(() => {
     void reloadArchives()
   }, [reloadArchives])
+
+  const reloadInvitations = useCallback(async () => {
+    if (!workspace || !isOwner) {
+      setInvitations([])
+      return
+    }
+    try {
+      setInvitations(await listWorkspaceInvitations(workspace.id))
+    } catch {
+      setError('成员邀请暂时无法读取，请检查网络后重试。')
+    }
+  }, [isOwner, workspace])
+
+  useEffect(() => {
+    void reloadInvitations()
+  }, [reloadInvitations])
+
+  async function handleInvite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!workspace || !isOwner) return
+    setIsInviting(true)
+    setError(null)
+    setNotice(null)
+    try {
+      const result = await inviteReadonlyMember(workspace.id, inviteEmail)
+      setInviteEmail('')
+      setNotice(result.message)
+      await reloadInvitations()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '邀请失败，请稍后重试。')
+    } finally {
+      setIsInviting(false)
+    }
+  }
+
+  async function handleRevoke(invitation: WorkspaceInvitation) {
+    if (!workspace || !isOwner) return
+    setRevokingInvitationId(invitation.id)
+    setError(null)
+    setNotice(null)
+    try {
+      const result = await revokeReadonlyMember(workspace.id, invitation.id)
+      setNotice(result.message)
+      setInvitations((current) => current.filter((item) => item.id !== invitation.id))
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '撤销失败，请稍后重试。')
+    } finally {
+      setRevokingInvitationId(null)
+    }
+  }
 
   async function handleExport(kind: 'json' | 'csv') {
     if (!workspace || !isOwner) return
@@ -134,7 +189,24 @@ export function SettingsPage() {
           <div><dt>当前工作区</dt><dd>{workspace?.name ?? '未准备好'}</dd></div>
           <div><dt>权限范围</dt><dd>{isOwner ? '可创建、修改、导出和恢复' : '仅查看已授权内容'}</dd></div>
         </dl>
-        <p className="settings-card-note">电脑和手机登录同一账号后读取同一套云端记录。未来添加只读成员时，页面会明确显示「仅查看」，并隐藏修改、恢复和导出入口。</p>
+        <p className="settings-card-note">电脑和手机登录同一账号后读取同一套云端记录。只读成员会明确显示「仅查看」，并隐藏修改、恢复和导出入口。</p>
+      </section>
+
+      <section className="settings-card" aria-labelledby="member-title">
+        <div className="section-title-row"><div><p className="eyebrow">MEMBER ACCESS</p><h2 id="member-title">只读成员</h2></div><MailPlus size={24} aria-hidden="true" /></div>
+        <p className="settings-card-note">按邮箱指定访问权限。新成员会收到账号邀请邮件；已有账号则立即获得只读权限。只读成员始终不能创建、修改、导出或恢复内容。</p>
+        {isOwner ? <>
+          <form className="member-invite-form" onSubmit={(event) => void handleInvite(event)}>
+            <label htmlFor="member-email"><span className="sr-only">成员邮箱</span><input id="member-email" type="email" autoComplete="email" value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} placeholder="输入要授权的邮箱" required disabled={isInviting} /></label>
+            <Button type="submit" disabled={isInviting}>{isInviting ? '正在邀请…' : '邀请为只读成员'}</Button>
+          </form>
+          <div className="member-invite-list" aria-live="polite">
+            {invitations.length === 0 ? <p className="settings-empty">还没有已指定的成员邮箱。</p> : invitations.map((invitation) => <article key={invitation.id} className="member-invite-row">
+              <div><strong>{invitation.email}</strong><span>{invitation.accepted_at ? `已可访问 · ${formatDate(invitation.accepted_at)}` : '等待对方完成账号设置'} · 仅查看</span></div>
+              <Button variant="ghost" onClick={() => void handleRevoke(invitation)} disabled={revokingInvitationId !== null}><UserRoundX size={15} />{revokingInvitationId === invitation.id ? '撤销中…' : '撤销权限'}</Button>
+            </article>)}
+          </div>
+        </> : <p className="readonly-notice">仅拥有者可以邀请或移除成员。</p>}
       </section>
 
       <section className="settings-card" aria-labelledby="backup-title">
