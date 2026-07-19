@@ -49,7 +49,7 @@ export function TopicListPage() {
       {isLoading && <p className="data-state">正在同步选题…</p>}
       {error && <p className="data-state is-error" role="alert">{error}</p>}
       {!isLoading && !error && items.length === 0 && <EmptyState title="这里还没有选题" description={isOwner ? '先记下一个现场发现、搜索关键词或客户问题，之后再把它变成脚本。' : '当前为只读权限，暂时没有可查看的选题。'} action={isOwner ? <Link className="ui-button ui-button--primary" to={{ pathname: '/topics/new', search: location.search }}>新建第一条选题</Link> : undefined} />}
-      {!isLoading && !error && items.length > 0 && <div className="topic-grid">{items.map((item) => <TopicCard key={item.id} item={item} search={location.search} />)}</div>}
+      {!isLoading && !error && items.length > 0 && <div className="topic-grid">{items.map((item) => <TopicCard key={item.id} item={item} search={location.search} canCreateScript={isOwner} />)}</div>}
     </section>
   )
 }
