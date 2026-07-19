@@ -6,6 +6,7 @@ import { TrackProvider } from './providers/TrackProvider'
 import { AppErrorBoundary } from './components/app/AppErrorBoundary'
 
 const LoginPage = lazy(() => import('./features/auth/LoginPage').then((module) => ({ default: module.LoginPage })))
+const SetPasswordPage = lazy(() => import('./features/auth/SetPasswordPage').then((module) => ({ default: module.SetPasswordPage })))
 const TopicListPage = lazy(() => import('./features/topics/TopicListPage').then((module) => ({ default: module.TopicListPage })))
 const TopicEditor = lazy(() => import('./features/topics/TopicEditor').then((module) => ({ default: module.TopicEditor })))
 const ScriptListPage = lazy(() => import('./features/scripts/ScriptListPage').then((module) => ({ default: module.ScriptListPage })))
@@ -50,10 +51,18 @@ function PublicOnly({ children }: { children: React.ReactNode }) {
   return user ? <Navigate to="/dashboard" replace /> : children
 }
 
+function PasswordSetupRoute() {
+  const { user, isBootstrapping } = useAuth()
+  if (isBootstrapping) return <LoadingScreen />
+  if (!user) return <Navigate to="/login" replace />
+  return <LazyScreen><SetPasswordPage /></LazyScreen>
+}
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<PublicOnly><LazyScreen><LoginPage /></LazyScreen></PublicOnly>} />
+      <Route path="/set-password" element={<PasswordSetupRoute />} />
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />

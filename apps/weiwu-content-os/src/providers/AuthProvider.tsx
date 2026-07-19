@@ -15,6 +15,10 @@ export interface AuthContextValue {
   isBootstrapping: boolean
   configurationError: boolean
   signInWithEmail: (email: string) => Promise<{ error: string | null }>
+  signInWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
+  signUpWithPassword: (email: string, password: string) => Promise<{ error: string | null }>
+  sendPasswordReset: (email: string) => Promise<{ error: string | null }>
+  updatePassword: (password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   retryWorkspace: () => Promise<void>
 }
@@ -106,6 +110,30 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return { error: error ? authErrorMessage(error) : null }
   }, [])
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    if (!supabase) return { error: '云端服务尚未配置，请联系工作区管理员。' }
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error: error ? '邮箱或密码不正确，请重试。' : null }
+  }, [])
+
+  const signUpWithPassword = useCallback(async (email: string, password: string) => {
+    if (!supabase) return { error: '云端服务尚未配置，请联系工作区管理员。' }
+    const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })
+    return { error: error ? authErrorMessage(error, '暂时无法创建账号，请稍后重试。') : null }
+  }, [])
+
+  const sendPasswordReset = useCallback(async (email: string) => {
+    if (!supabase) return { error: '云端服务尚未配置，请联系工作区管理员。' }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/set-password` })
+    return { error: error ? authErrorMessage(error, '暂时无法发送重置邮件，请稍后重试。') : null }
+  }, [])
+
+  const updatePassword = useCallback(async (password: string) => {
+    if (!supabase) return { error: '云端服务尚未配置，请联系工作区管理员。' }
+    const { error } = await supabase.auth.updateUser({ password })
+    return { error: error ? authErrorMessage(error, '暂时无法设置密码，请稍后重试。') : null }
+  }, [])
+
   const signOut = useCallback(async () => {
     if (!supabase) return
     await supabase.auth.signOut()
@@ -124,9 +152,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     isBootstrapping,
     configurationError: supabase === null,
     signInWithEmail,
+    signInWithPassword,
+    signUpWithPassword,
+    sendPasswordReset,
+    updatePassword,
     signOut,
     retryWorkspace
-  }), [isBootstrapping, membership, retryWorkspace, session, signInWithEmail, signOut, workspace])
+  }), [isBootstrapping, membership, retryWorkspace, sendPasswordReset, session, signInWithEmail, signInWithPassword, signOut, signUpWithPassword, updatePassword, workspace])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -28,6 +28,32 @@ export type Database = {
         Update: { id?: string; workspace_id?: string; user_id?: string; role?: Database['public']['Enums']['workspace_role']; created_at?: string }
         Relationships: []
       }
+      workspace_invitations: {
+        Row: {
+          id: string
+          workspace_id: string
+          email: string
+          role: Database['public']['Enums']['workspace_role']
+          invited_by: string
+          invited_user_id: string | null
+          created_at: string
+          accepted_at: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          email: string
+          role?: Database['public']['Enums']['workspace_role']
+          invited_by: string
+          invited_user_id?: string | null
+          created_at?: string
+          accepted_at?: string | null
+          revoked_at?: string | null
+        }
+        Update: Partial<Database['public']['Tables']['workspace_invitations']['Insert']>
+        Relationships: []
+      }
       tracks: {
         Row: Timestamps & { id: string; workspace_id: string; code: Database['public']['Enums']['track_code']; name: string }
         Insert: { id?: string; workspace_id: string; code: Database['public']['Enums']['track_code']; name: string; created_at?: string; updated_at?: string }
